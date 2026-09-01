@@ -1,0 +1,7 @@
+result
+result-*
+
+*.tar.xz
+
+# IDA Pro hotfix binaries fetched via BitTorrent (fetchtorrent) - do not commit
+/pkgs/ida-pro/ida94*/
