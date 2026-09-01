@@ -1,0 +1,32 @@
+name: Auto-Update Packages
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run IDA Pro updater
+        run: python pkgs/ida-pro/update.py
+        
+      - name: Run Binary Ninja updater
+        run: python pkgs/binary-ninja/update.py
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: auto-update packages"
+          file_pattern: "pkgs/*/source.json"
