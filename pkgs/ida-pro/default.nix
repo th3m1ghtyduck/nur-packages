@@ -104,9 +104,9 @@ in
     nativeBuildInputs = [
       pkgs.autoPatchelfHook
       pkgs.makeWrapper
-      pkgs.copyDesktopItems
       pkgs.nodejs
     ];
+
 
     buildInputs = [
       pkgs.libGL
@@ -172,7 +172,11 @@ in
 
       mv $out/.local/share $out 2>/dev/null || true
       rm -rf $out/.local 2>/dev/null || true
-      rm -f $out/share/applications/com.hex*.desktop || true
+      
+      # Patch the generated .desktop file to point to the wrapped executable
+      if ls $out/share/applications/com.hex*.desktop 1> /dev/null 2>&1; then
+        sed -i 's|^Exec=.*|Exec=ida %F|' $out/share/applications/com.hex*.desktop
+      fi
 
       runHook postInstall
     '';
