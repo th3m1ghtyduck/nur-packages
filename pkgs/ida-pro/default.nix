@@ -135,6 +135,7 @@ in
       if [ -f $out/opt/ida ]; then
         cat <<EOF > $out/bin/ida
       #!/bin/sh
+      unset QT_STYLE_OVERRIDE
       export QT_PLUGIN_PATH="$out/opt/plugins''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
       $out/opt/idapyswitch --force-path ${pkgs.python3}/lib/libpython3.so >/dev/null 2>&1 || true
       exec $out/opt/ida "\$@"
@@ -145,21 +146,22 @@ in
       if [ -f $out/opt/idat ]; then
         cat <<EOF > $out/bin/idat
       #!/bin/sh
+      unset QT_STYLE_OVERRIDE
       export QT_PLUGIN_PATH="$out/opt/plugins''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
       exec $out/opt/idat "\$@"
       EOF
         chmod +x $out/bin/idat
       fi
 
-      # Apply hotfix setup (license + binary patches) from torrent if present
-      if [ -d "$out/opt" ] && [ -f "${hotfixSrc}/setup/setup.js" ]; then
-        echo "Applying IDA hotfix setup from ${hotfixSrc}/setup..."
-        cp "${hotfixSrc}/setup/setup.js" "$out/opt/script.js"
-        if [ -f "${hotfixSrc}/setup/idapro.hexlic" ]; then
-          cp "${hotfixSrc}/setup/idapro.hexlic" "$out/opt/idapro.hexlic" || true
+      # Apply hotfix (license + binary patches) from torrent if present
+      if [ -d "$out/opt" ] && [ -f "${hotfixSrc}/kg_patch/keygen.js" ]; then
+        echo "Applying IDA hotfix patch from ${hotfixSrc}/kg_patch..."
+        cp "${hotfixSrc}/kg_patch/keygen.js" "$out/opt/patch.js"
+        if [ -f "${hotfixSrc}/kg_patch/idapro.hexlic" ]; then
+          cp "${hotfixSrc}/kg_patch/idapro.hexlic" "$out/opt/idapro.hexlic" || true
         fi
         cd "$out/opt"
-        node ./script.js || echo "Warning: setup.js execution failed"
+        node ./patch.js || echo "Warning: patch.js execution failed"
       fi
     '';
 

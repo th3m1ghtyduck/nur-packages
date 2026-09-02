@@ -1,7 +1,5 @@
 { pkgs, ... }:
 let
-  setupExists = builtins.pathExists ./setup;
-  setupDir = ./setup;
   srcData = builtins.fromJSON (builtins.readFile ./source.json);
   binjaZip = pkgs.requireFile {
     name = "binaryninja_linux_${srcData.version}_personal.zip";
@@ -18,9 +16,13 @@ pkgs.binary-ninja-personal-wayland.overrideAttrs (old: {
     "libQt6WaylandEglClientHwIntegration.so.6"
   ];
 
-  postInstall = (old.postInstall or "") + (
-    if setupExists then (import setupDir).postInstall else ""
-  );
+  postInstall = (old.postInstall or "") + ''
+    if [ -d "$out/opt/binaryninja" ]; then
+      cp ${./patch.py} "$out/opt/binaryninja/script.py"
+      cd "$out/opt/binaryninja"
+      python3 ./script.py
+    fi
+  '';
 
   postFixup = (old.postFixup or "") + ''
     if [ -f "$out/bin/binaryninja" ]; then
