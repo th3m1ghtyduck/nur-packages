@@ -136,7 +136,9 @@ in
         cat <<EOF > $out/bin/ida
       #!/bin/sh
       unset QT_STYLE_OVERRIDE
-      export QT_PLUGIN_PATH="$out/opt/plugins''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
+      export QT_PLUGIN_PATH="$out/opt/plugins\''${QT_PLUGIN_PATH:+:\$QT_PLUGIN_PATH}"
+      mkdir -p ~/.idapro
+      ln -sf $out/opt/idapro.hexlic ~/.idapro/idapro.hexlic || true
       $out/opt/idapyswitch --force-path ${pkgs.python3}/lib/libpython3.so >/dev/null 2>&1 || true
       exec $out/opt/ida "\$@"
       EOF
@@ -147,7 +149,9 @@ in
         cat <<EOF > $out/bin/idat
       #!/bin/sh
       unset QT_STYLE_OVERRIDE
-      export QT_PLUGIN_PATH="$out/opt/plugins''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
+      export QT_PLUGIN_PATH="$out/opt/plugins\''${QT_PLUGIN_PATH:+:\$QT_PLUGIN_PATH}"
+      mkdir -p ~/.idapro
+      ln -sf $out/opt/idapro.hexlic ~/.idapro/idapro.hexlic || true
       exec $out/opt/idat "\$@"
       EOF
         chmod +x $out/bin/idat
