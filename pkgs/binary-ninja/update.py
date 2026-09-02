@@ -5,7 +5,7 @@ import subprocess
 import os
 
 base_url = 'https://od.cloudsploit.top/api/?path=/tools/BinaryNinja'
-req = urllib.request.Request(base_url, headers={'User-Agent': 'Mozilla/5.0'})
+req = urllib.request.Request(base_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'})
 resp = urllib.request.urlopen(req)
 data = json.loads(resp.read().decode('utf-8'))
 
@@ -28,7 +28,7 @@ versions.sort(key=parse_ver, reverse=True)
 
 for v in versions:
     v_url = f'https://od.cloudsploit.top/api/?path=/tools/BinaryNinja/{urllib.parse.quote(v)}'
-    req = urllib.request.Request(v_url, headers={'User-Agent': 'Mozilla/5.0'})
+    req = urllib.request.Request(v_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'})
     resp = urllib.request.urlopen(req)
     v_data = json.loads(resp.read().decode('utf-8'))
     

@@ -239,6 +239,5 @@ in
       inherit hotfixSrc;
       torrentUrl = pinnedTorrentUrl;
       magnetUrl = pinnedMagnetUrl;
-      updateScript = pkgs.callPackage ./update.nix {};
     };
   }
