@@ -22,7 +22,11 @@
     in
     {
       legacyPackages = forAllSystems (system: import ./default.nix {
-        pkgs = import nixpkgs { inherit system; overlays = [ binaryninja.overlays.default ida-pro-overlay.overlays.default ]; };
+        pkgs = import nixpkgs { 
+          inherit system;
+          config.allowUnfree = true;
+          overlays = [ binaryninja.overlays.default ida-pro-overlay.overlays.default ]; 
+        };
       });
       packages = forAllSystems (system: nixpkgs.lib.filterAttrs (_: v: nixpkgs.lib.isDerivation v) self.legacyPackages.${system});
       # homeModules = import ./home-modules;
