@@ -25,7 +25,7 @@ jobs:
         run: python pkgs/ida-pro/update.py
         
       - name: Run Binary Ninja updater
-        run: python pkgs/binary-ninja/update.py
+        run: python pkgs/binaryninja/update.py
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
