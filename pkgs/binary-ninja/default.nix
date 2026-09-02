@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, useWayland ? true, ... }:
 let
   srcData = builtins.fromJSON (builtins.readFile ./source.json);
   binjaZip = pkgs.requireFile {
@@ -6,8 +6,9 @@ let
     url = "https://binary.ninja";
     sha256 = srcData.hash;
   };
+  basePkg = if useWayland then pkgs.binary-ninja-personal-wayland else pkgs.binary-ninja-personal;
 in
-pkgs.binary-ninja-personal-wayland.overrideAttrs (old: {
+basePkg.overrideAttrs (old: {
   src = binjaZip;
 
   nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.python312 pkgs.python312Packages.pycryptodome pkgs.makeWrapper ];
