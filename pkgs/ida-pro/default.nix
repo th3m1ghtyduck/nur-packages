@@ -166,6 +166,7 @@ in
           cp "${hotfixSrc}/kg_patch/idapro.hexlic" "$out/opt/idapro.hexlic" || true
         fi
         cd "$out/opt"
+        chmod u+w libida.so libida32.so || true
         node ./patch.js || echo "Warning: patch.js execution failed"
       fi
     '';
