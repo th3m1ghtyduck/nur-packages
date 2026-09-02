@@ -136,6 +136,7 @@ in
         cat <<EOF > $out/bin/ida
       #!/bin/sh
       unset QT_STYLE_OVERRIDE
+      export QT_QPA_PLATFORM=xcb
       export QT_PLUGIN_PATH="$out/opt/plugins\''${QT_PLUGIN_PATH:+:\$QT_PLUGIN_PATH}"
       mkdir -p ~/.idapro
       ln -sf $out/opt/idapro.hexlic ~/.idapro/idapro.hexlic || true
