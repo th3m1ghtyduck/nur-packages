@@ -27,9 +27,11 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Run IDA Pro updater
+        continue-on-error: true
         run: python pkgs/ida-pro/update.py
         
       - name: Run Binary Ninja updater
+        continue-on-error: true
         run: python pkgs/binaryninja/update.py
 
       - name: Commit and Push changes
