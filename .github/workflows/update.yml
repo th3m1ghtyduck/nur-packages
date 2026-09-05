@@ -32,6 +32,8 @@ jobs:
         
       - name: Run Binary Ninja updater
         continue-on-error: true
+        env:
+          NIX_CURL_FLAGS: "-A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'"
         run: python pkgs/binaryninja/update.py
 
       - name: Commit and Push changes
