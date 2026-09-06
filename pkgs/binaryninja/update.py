@@ -39,9 +39,25 @@ for v in versions:
             download_url = f'https://od.cloudsploit.top/api/raw?path={urllib.parse.quote(path)}'
             print(f"Found latest linux zip in version {v}: {download_url}")
             
-            print("Prefetching SHA256 hash with nix-prefetch-url...")
             zip_name = f'binaryninja_linux_{v}_personal.zip'
-            result = subprocess.run(['nix-prefetch-url', '--name', zip_name, download_url], capture_output=True, text=True)
+            
+            if os.environ.get('GITHUB_ACTIONS') == 'true':
+                print("Prefetching SHA256 hash with nix-prefetch-url (via local download to bypass 403)...")
+                import tempfile
+                import shutil
+                
+                req = urllib.request.Request(download_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'})
+                with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                    with urllib.request.urlopen(req) as resp:
+                        shutil.copyfileobj(resp, tmp)
+                    tmp_path = tmp.name
+                    
+                result = subprocess.run(['nix-prefetch-url', '--name', zip_name, f'file://{tmp_path}'], capture_output=True, text=True)
+                os.remove(tmp_path)
+            else:
+                print("Prefetching SHA256 hash with nix-prefetch-url...")
+                result = subprocess.run(['nix-prefetch-url', '--name', zip_name, download_url], capture_output=True, text=True)
+            
             if result.returncode != 0:
                 print("Failed to prefetch hash!")
                 print(result.stderr)
