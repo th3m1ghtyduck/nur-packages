@@ -5,7 +5,7 @@
 { pkgs ? import <nixpkgs> {} }:
 
 {
-  binaryninja-personal = pkgs.callPackage ./pkgs/binaryninja {};
+  binaryninja-personal = pkgs.callPackage ./pkgs/binaryninja-personal {};
   ida-pro = pkgs.callPackage ./pkgs/ida-pro {};
   davinci-resolve-studio = pkgs.callPackage ./pkgs/davinci-resolve-studio {};
 }
