@@ -26,8 +26,8 @@ else
 fi
 
 # Prefer live URLs, fallback to pinned
-TORRENT_URL="''${LIVE_TORRENT_URL:-${pinnedTorrentUrl}}"
-MAGNET_URL="''${LIVE_MAGNET_URL:-${pinnedMagnetUrl}}"
+TORRENT_URL="${LIVE_TORRENT_URL:-$url}"
+MAGNET_URL="${LIVE_MAGNET_URL:-$magnetUrl}"
 
 echo "Attempting download via torrent file: $TORRENT_URL"
 if ! rqbit \

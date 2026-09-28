@@ -26,6 +26,7 @@
       ];
       # Expose pinned URLs for tooling
       url = pinnedTorrentUrl;
+      magnetUrl = pinnedMagnetUrl;
       passthru.magnetUrl = pinnedMagnetUrl;
     } (builtins.readFile ./fetch-torrent.sh);
 
