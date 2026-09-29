@@ -12,6 +12,7 @@ import html
 import os
 import sys
 import subprocess
+import base64
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SOURCE_JSON = os.path.join(SCRIPT_DIR, "source.json")
@@ -25,6 +26,19 @@ def fetch_page(url):
     req = urllib.request.Request(url, headers=HEADERS)
     with urllib.request.urlopen(req, timeout=15) as resp:
         return resp.read().decode("utf-8", errors="replace")
+
+def magnet_info(magnet_url):
+    # The btih info-hash identifies the torrent contents, so it changes on any re-release
+    # even when the version label and URLs stay the same, and survives tracker list edits.
+    params = urllib.parse.parse_qs(urllib.parse.urlparse(magnet_url).query)
+    info_hash = None
+    for xt in params.get("xt", []):
+        if xt.lower().startswith("urn:btih:"):
+            h = xt[len("urn:btih:"):]
+            info_hash = base64.b32decode(h.upper()).hex() if len(h) == 32 else h.lower()
+            break
+    size = params.get("xl", [None])[0]
+    return info_hash, int(size) if size and size.isdigit() else None
 
 def parse_latest(html_text):
     # Find first release block
@@ -76,12 +90,19 @@ def parse_latest(html_text):
     else:
         version = display_version.lower().replace(" ", "-")
 
+    info_hash, size = magnet_info(magnet_url)
+    if not info_hash:
+        print("Failed to find btih info-hash in magnet link", file=sys.stderr)
+        sys.exit(1)
+
     return {
         "displayVersion": display_version,
         "version": version,
         "date": date,
         "torrentUrl": torrent_url,
         "magnetUrl": magnet_url,
+        "infoHash": info_hash,
+        "size": size,
     }
 
 def main():
@@ -93,6 +114,7 @@ def main():
     print(f"Latest: {latest['displayVersion']} ({latest['date']})")
     print(f"  torrent: {latest['torrentUrl']}")
     print(f"  magnet: {latest['magnetUrl'][:80]}...")
+    print(f"  info-hash: {latest['infoHash']}")
 
     # Load existing source.json if present
     existing = {}
@@ -100,26 +122,32 @@ def main():
         with open(SOURCE_JSON, "r") as f:
             existing = json.load(f)
 
-    # Compare
-    needs_update = (
-        existing.get("torrentUrl") != latest["torrentUrl"]
-        or existing.get("magnetUrl") != latest["magnetUrl"]
-        or existing.get("version") != latest["version"]
-        or existing.get("displayVersion") != latest["displayVersion"]
+    existing_info_hash = existing.get("infoHash") or magnet_info(existing.get("magnetUrl", ""))[0]
+    content_changed = existing_info_hash != latest["infoHash"]
+    metadata_changed = any(
+        existing.get(k) != latest[k]
+        for k in ("version", "date", "displayVersion", "torrentUrl", "magnetUrl", "infoHash", "size")
     )
+    needs_update = content_changed or metadata_changed
+
+    if content_changed:
+        print(f"Info-hash changed: {existing_info_hash} -> {latest['infoHash']}")
+    elif metadata_changed:
+        print("Info-hash unchanged, only refreshing metadata (keeping existing hash).")
 
     if not needs_update and not prefetch:
         print("source.json is already up to date.")
         return 0
 
-    # Prepare new source.json
     new_data = {
         "version": latest["version"],
         "date": latest["date"],
         "displayVersion": latest["displayVersion"],
         "torrentUrl": latest["torrentUrl"],
         "magnetUrl": latest["magnetUrl"],
-        "hash": existing.get("hash", "") if not needs_update else "",
+        "infoHash": latest["infoHash"],
+        "size": latest["size"],
+        "hash": "" if content_changed else existing.get("hash", ""),
     }
 
     # If prefetch requested, try to get hash via nix build with fakeHash
@@ -156,6 +184,11 @@ def main():
             else:
                 new_hash = m.group(1)
             print(f"Discovered hash: {new_hash}")
+            old_hash = existing.get("hash", "")
+            if old_hash and old_hash == new_hash:
+                print("Hash matches the one in source.json.")
+            elif old_hash and not content_changed:
+                print(f"Warning: same info-hash but NAR hash changed from {old_hash}", file=sys.stderr)
             new_data["hash"] = new_hash
 
     # Write source.json
@@ -166,7 +199,7 @@ def main():
     if needs_update:
         print(f"\nUpdated {SOURCE_JSON}")
         print(json.dumps(new_data, indent=2))
-        if not prefetch:
+        if not prefetch and content_changed:
             print("\nHash is set to \"\" (fake). Run one of:")
             print("  python3 update.py --prefetch   # to auto-fetch hash (heavy, 3.6GB download)")
             print("  NIXPKGS_ALLOW_UNFREE=1 nix build --impure -A ida-pro-personal  # will show correct hash, then paste into source.json")

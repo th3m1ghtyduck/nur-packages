@@ -61,3 +61,23 @@ fi
   fi
   rm -rf "$downloadedDirectory"
 )
+
+# Check hashes with official hexrays.su hashes
+echo "Verifying official hashes..."
+BASE_URL=$(dirname "$TORRENT_URL")
+if curl -sL --max-time 15 "$BASE_URL/setup.sha256" -o "$out/setup.sha256"; then
+  echo "Downloaded setup.sha256"
+  (cd "$out" && sha256sum --ignore-missing -c setup.sha256 || { echo "Hash mismatch!"; exit 1; })
+else
+  echo "Warning: Could not fetch setup.sha256"
+fi
+
+if curl -sL --max-time 15 "$BASE_URL/misc.sha256" -o "$out/misc.sha256"; then
+  echo "Downloaded misc.sha256"
+  (cd "$out" && sha256sum --ignore-missing -c misc.sha256 || { echo "Hash mismatch!"; exit 1; })
+fi
+
+# Clean up hash files so they don't affect the final nar hash
+rm -f "$out/setup.sha256" "$out/misc.sha256"
+
+echo "Hash verification complete."

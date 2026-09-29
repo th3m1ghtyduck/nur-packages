@@ -4,5 +4,7 @@
   "displayVersion": "IDA Pro 9.4 SP1",
   "torrentUrl": "https://hexrays.su/ida94sp1/ida94sp1.torrent",
   "magnetUrl": "magnet:?xt=urn:btih:9abff06f074734094e5a241bbd83d33b279508e2&dn=ida94sp1&xl=3682681299&tr=udp%3A%2F%2Ftracker.corpscorp.online%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=https%3A%2F%2Ftracker.7471.top%3A443%2Fannounce&tr=http%3A%2F%2Ftracker.mywaifu.best%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.nyaa.vc%3A6969%2Fannounce&tr=http%3A%2F%2Ftracker.waaa.moe%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce",
+  "infoHash": "9abff06f074734094e5a241bbd83d33b279508e2",
+  "size": 3682681299,
   "hash": "sha256-BPL6h5+XcakQrHH6bq8wx7Bt/aav+vnUBU/R27JdmJw="
 }
