@@ -140,7 +140,7 @@ in
       export QT_PLUGIN_PATH="$out/opt/plugins\''${QT_PLUGIN_PATH:+:\$QT_PLUGIN_PATH}"
       mkdir -p ~/.idapro
       ln -sf $out/opt/idapro.hexlic ~/.idapro/idapro.hexlic || true
-      $out/opt/idapyswitch --force-path ${pkgs.python3}/lib/libpython3.so >/dev/null 2>&1 || true
+      $out/opt/idapyswitch --force-path ${pkgs.python3}}/lib/libpython${pkgs.python3.pythonVersion}.so >/dev/null 2>&1 || true
       exec $out/opt/ida "\$@"
       EOF
         chmod +x $out/bin/ida
