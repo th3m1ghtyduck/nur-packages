@@ -62,19 +62,33 @@ fi
   rm -rf "$downloadedDirectory"
 )
 
-# Check hashes with official hexrays.su hashes
+# Check hashes with official hexrays.su hashes (if published).
+# NOTE: not all releases publish setup.sha256/misc.sha256 (e.g. 9.5 Beta 1,
+# 9.4 Hotfix/SP1 have none). Missing hash files must NOT fail the build.
 echo "Verifying official hashes..."
 BASE_URL=$(dirname "$TORRENT_URL")
-if curl -sL --max-time 15 "$BASE_URL/setup.sha256" -o "$out/setup.sha256"; then
+if curl -fSL --max-time 15 "$BASE_URL/setup.sha256" -o "$out/setup.sha256"; then
   echo "Downloaded setup.sha256"
-  (cd "$out" && sha256sum --ignore-missing -c setup.sha256 || { echo "Hash mismatch!"; exit 1; })
+  if grep -qE '^[0-9a-fA-F]{64}[[:space:]]' "$out/setup.sha256"; then
+    (cd "$out" && sha256sum --ignore-missing -c setup.sha256 || { echo "Hash mismatch!"; exit 1; })
+  else
+    echo "Warning: setup.sha256 has no valid checksum lines, skipping verification"
+  fi
 else
-  echo "Warning: Could not fetch setup.sha256"
+  echo "Warning: Could not fetch setup.sha256 (not published for this release?), skipping"
+  rm -f "$out/setup.sha256"
 fi
 
-if curl -sL --max-time 15 "$BASE_URL/misc.sha256" -o "$out/misc.sha256"; then
+if curl -fSL --max-time 15 "$BASE_URL/misc.sha256" -o "$out/misc.sha256"; then
   echo "Downloaded misc.sha256"
-  (cd "$out" && sha256sum --ignore-missing -c misc.sha256 || { echo "Hash mismatch!"; exit 1; })
+  if grep -qE '^[0-9a-fA-F]{64}[[:space:]]' "$out/misc.sha256"; then
+    (cd "$out" && sha256sum --ignore-missing -c misc.sha256 || { echo "Hash mismatch!"; exit 1; })
+  else
+    echo "Warning: misc.sha256 has no valid checksum lines, skipping verification"
+  fi
+else
+  echo "Warning: Could not fetch misc.sha256 (not published for this release?), skipping"
+  rm -f "$out/misc.sha256"
 fi
 
 # Clean up hash files so they don't affect the final nar hash
