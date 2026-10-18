@@ -105,6 +105,22 @@ in
       cp $IDADIR/libida.so $out/lib || true
       addAutoPatchelfSearchPath $IDADIR
 
+      # patchelf (autoPatchelfHook + appendRunpaths + myFinalFixupPhase) grows
+      # the ELF phdr table. A few of IDA's libs pack .note/.init/.plt directly
+      # behind the phdr table, so the growth overwrites .init/.plt and leaves a
+      # stale DT_INIT behind: ld.so then jumps into garbage during call_init at
+      # startup (libSwiftDemangle.so is dlopened by plugins/swift.so -> every
+      # launch dies with SIGSEGV). Save pristine copies now, restore them after
+      # all patchelf passes and resolve their deps via LD_LIBRARY_PATH in the
+      # wrappers instead of rpaths.
+      mkdir -p $out/.pristine-libs
+      for f in $IDADIR/libSwiftDemangle.so $IDADIR/python/PySide6/*.so* $IDADIR/python/shiboken6/*.so*; do
+        [ -f "$f" ] || continue
+        rel=''${f#"$IDADIR/"}
+        mkdir -p "$out/.pristine-libs/$(dirname "$rel")"
+        gzip -c "$f" > "$out/.pristine-libs/$rel.gz"
+      done
+
       patchelf --add-needed libcrypto.so $IDADIR/libida.so || true
 
       mv $out/.local/share $out 2>/dev/null || true
@@ -128,6 +144,16 @@ in
           patchelf --set-rpath "$out/opt:$NEW_RPATH" "$f"
         fi
       done
+
+      # Restore the pristine ELFs saved in installPhase (see comment there).
+      if [ -d "$out/.pristine-libs" ]; then
+        find "$out/.pristine-libs" -type f -name '*.gz' | while read -r g; do
+          rel=''${g#"$out/.pristine-libs/"}
+          rel=''${rel%.gz}
+          gunzip -c "$g" > "$out/opt/$rel"
+        done
+        rm -rf "$out/.pristine-libs"
+      fi
     '';
 
     postInstall = ''
@@ -138,9 +164,10 @@ in
       #!/bin/sh
       unset QT_STYLE_OVERRIDE
       export QT_PLUGIN_PATH="$out/opt/plugins\''${QT_PLUGIN_PATH:+:\$QT_PLUGIN_PATH}"
+      export LD_LIBRARY_PATH="$out/opt:$out/opt/python/PySide6:$out/opt/python/shiboken6:${pkgs.libGL}/lib:${pkgs.libxkbcommon}/lib:${pkgs.stdenv.cc.cc.lib}/lib\''${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
       mkdir -p ~/.idapro
       ln -sf $out/opt/idapro.hexlic ~/.idapro/idapro.hexlic || true
-      $out/opt/idapyswitch --force-path ${pkgs.python3}}/lib/libpython${pkgs.python3.pythonVersion}.so >/dev/null 2>&1 || true
+      $out/opt/idapyswitch --force-path ${pkgs.python3}/lib/libpython${pkgs.python3.pythonVersion}.so >/dev/null 2>&1 || true
       exec $out/opt/ida "\$@"
       EOF
         chmod +x $out/bin/ida
@@ -151,6 +178,7 @@ in
       #!/bin/sh
       unset QT_STYLE_OVERRIDE
       export QT_PLUGIN_PATH="$out/opt/plugins\''${QT_PLUGIN_PATH:+:\$QT_PLUGIN_PATH}"
+      export LD_LIBRARY_PATH="$out/opt:$out/opt/python/PySide6:$out/opt/python/shiboken6:${pkgs.libGL}/lib:${pkgs.libxkbcommon}/lib:${pkgs.stdenv.cc.cc.lib}/lib\''${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
       mkdir -p ~/.idapro
       ln -sf $out/opt/idapro.hexlic ~/.idapro/idapro.hexlic || true
       exec $out/opt/idat "\$@"
