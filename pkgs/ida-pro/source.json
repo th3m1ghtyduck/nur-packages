@@ -1,10 +1,10 @@
 {
-  "version": "9.5.0-beta1",
-  "date": "2026-10-09",
-  "displayVersion": "IDA Pro 9.5 Beta 1",
-  "torrentUrl": "https://hexrays.su/ida95b1/ida95b1.torrent",
-  "magnetUrl": "magnet:?xt=urn:btih:ffb182b7024f3356722c6082663ab5a83817dcb2&dn=ida95b1&xl=4756528480&tr=udp%3A%2F%2Ftracker.corpscorp.online%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=https%3A%2F%2Ftracker.7471.top%3A443%2Fannounce&tr=http%3A%2F%2Ftracker.mywaifu.best%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.nyaa.vc%3A6969%2Fannounce&tr=http%3A%2F%2Ftracker.waaa.moe%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce",
-  "infoHash": "ffb182b7024f3356722c6082663ab5a83817dcb2",
-  "size": 4756528480,
-  "hash": "sha256-r7UG9qjIf7xgbm/JX3RHr8JemNeV2aQGQbh2aZMd51E="
+  "version": "9.5.0",
+  "date": "2026-10-27",
+  "displayVersion": "IDA Pro 9.5",
+  "torrentUrl": "https://hexrays.su/ida95/ida95.torrent",
+  "magnetUrl": "magnet:?xt=urn:btih:ed810311f1af78b9f9872da12076d2a413bd9ae5&dn=ida95&xl=5820581379&tr=udp%3A%2F%2Ftracker.corpscorp.online%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=https%3A%2F%2Ftracker.7471.top%3A443%2Fannounce&tr=http%3A%2F%2Ftracker.mywaifu.best%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.nyaa.vc%3A6969%2Fannounce&tr=http%3A%2F%2Ftracker.waaa.moe%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce",
+  "infoHash": "ed810311f1af78b9f9872da12076d2a413bd9ae5",
+  "size": 5820581379,
+  "hash": ""
 }
