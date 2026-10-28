@@ -1,7 +1,7 @@
 """
 Auto-updater for IDA Pro from hexrays.su
 Scrapes https://hexrays.su/ for latest torrent/magnet and updates source.json
-Usage: python3 update.py [--prefetch]  ( --prefetch tries to compute new hash via nix build )
+Usage: python3 update.py [--prefetch]  ( hash is recomputed automatically when the torrent content changes; --prefetch forces it )
 """
 
 import re
@@ -129,6 +129,11 @@ def main():
         for k in ("version", "date", "displayVersion", "torrentUrl", "magnetUrl", "infoHash", "size")
     )
     needs_update = content_changed or metadata_changed
+
+    # A content change means the torrent payload changed, so the cached NAR
+    # hash is stale: recompute it automatically instead of requiring --prefetch.
+    if content_changed:
+        prefetch = True
 
     if content_changed:
         print(f"Info-hash changed: {existing_info_hash} -> {latest['infoHash']}")

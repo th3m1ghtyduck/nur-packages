@@ -13,7 +13,7 @@
   # Fetch IDA via BitTorrent, at build time try live discovery from hexrays.su first,
   # fallback to pinned URLs from source.json. Uses rqbit (smaller closure than transmission).
   hotfixSrc =
-    pkgs.runCommand "ida94hotfix" {
+    pkgs.runCommand "ida-pro-src" {
       outputHash = pinnedHash;
       outputHashAlgo = "sha256";
       outputHashMode = "recursive";
