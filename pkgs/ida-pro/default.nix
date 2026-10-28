@@ -128,7 +128,7 @@ in
       
       # Patch the generated .desktop file to point to the wrapped executable
       if ls $out/share/applications/com.hex*.desktop 1> /dev/null 2>&1; then
-        sed -i 's|^Exec=.*|Exec=ida %F|' $out/share/applications/com.hex*.desktop
+        sed -i 's|^Exec=.*|Exec=env QT_QPA_PLATFORM=xcb ida %F|' $out/share/applications/com.hex*.desktop
       fi
 
       runHook postInstall
